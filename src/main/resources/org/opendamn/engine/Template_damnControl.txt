@@ -1,0 +1,357 @@
+[TEMPLATE]
+LUA
+CA63E2A3
+4A5E8EF6
+0DAE102C
+# Variables: C0,C1,C2,C3,C4,C5
+--#-package:0000daea# -- package signature 
+----------- created by Daeley & SSP -------
+---------- last edit: 01/06/07 ------------
+
+-- some code to prevent interfering with other kTest1 messages (from me... lol)
+ news_trigger_ID = " "
+ itemID = " "
+ function set_news_ID(string)
+	news_trigger_ID = string
+ end
+
+if (DAMenu == nil) then
+
+ -- ************** values ****************** --
+
+ DAMenu = {}
+ DAMenu.menu = true -- true for submenu, false for item
+ DAMenu.parent = DAMenu -- self
+ DAMenu.op = false
+ DAMenu.items = {}
+ DAMenu.size = 0
+ DAMenu.linkname = "${C0}"
+ DAMenu.description = ""
+
+ DAMenu.currentMenu = DAMenu -- keep pointer to currently displayed menu
+
+ DAMenu.icons = {}
+ DAMenu.icons.menu   = "sc4://HTML/dae1e700/dae1e71f"
+ DAMenu.icons.search = "sc4://HTML/dae1e700/dae1e722"
+ DAMenu.icons.info   = "sc4://HTML/dae1e700/dae1e724"
+ DAMenu.icons.home   = "sc4://HTML/dae1e700/dae1e721"
+ DAMenu.icons.back   = "sc4://html/dae1e700/dae1e720"
+ DAMenu.icons.plop   = "sc4://html/dae1e700/dae1e723"
+
+ -- ************** news message ****************** --
+
+ local a = create_advice_cityplanning('0DAE102D')
+ a.trigger  = "1"
+ a.frequency = 1
+ a.timeout = 20000
+ a.title = [[text@dae1e775]]
+ a.message   = [[text@dae1e776]]
+ a.priority  = 0
+ a.mood = advice_moods.NEUTRAL
+ a.once = 0
+
+ local a = create_advice_cityplanning('0DAE102C')
+ a.trigger  = "DAMenu.op and (news_trigger_ID == 'DAMenu')"
+ a.frequency = 1
+ a.timeout = 5
+ a.title = [[text@dae1e773]]
+ a.message   = [[text@dae1e774]]
+ a.priority  = ${C1}
+ a.mood = advice_moods.NEUTRAL
+ a.once = 0
+ a.event = game_events.kTEST1 
+
+ -- ************** def functions  ****************** --
+
+ DAMenu.addItem = function(rootmenu, item)
+   rootmenu.items[rootmenu.size] = item
+   rootmenu.items[string.lower(item.linkname)] = item -- keep double indexation
+   rootmenu.size = rootmenu.size + 1
+   item.parent = rootmenu
+   if (not (item.menu)) then
+     if (item.description == [[text@NULL]]) then
+        item.description = nil -- nillification (yes, I just invented that word)
+     end
+     DAMenu.createItemNews(item)
+   end
+ end
+
+ DAMenu.newMenu = function()
+   menu = {}
+   menu.menu = true -- true for submenu, false for item
+   menu.items = {}
+   menu.size = 0
+   menu.description = "menu description"
+   menu.info = {}
+   menu.info[1] = ""
+   menu.info[2] = ""
+   menu.linkname = "menu linkname"
+   menu.icon = DAMenu.icons.menu
+   return menu
+ end
+
+ DAMenu.addMenu = function(root,name)
+   menu = DAMenu.newMenu()
+   menu.linkname = name
+   DAMenu.addItem(root,menu)
+   return menu
+ end
+
+ DAMenu.newItem = function()
+   item = {}
+   item.menu = false
+   item.hidden = false
+   item.network = false -- these is obsolete, but for old DAMN
+   item.type = "" -- available types: flora, network, zone and finally building
+   item.linkname = "item linkname"
+   item.info = {}
+   item.info[1] = ""
+   item.info[2] = ""
+   item.description = "item description"
+   item.iid = "00000000"
+   item.icon = DAMenu.icons.plop
+   return item
+ end
+
+ DAMenu.itemCursor = function(item)
+	-- this is now obsolete, but for old DAMN
+   if (item.network) then
+     game.tool_plop_network(tonumber(item.iid,16))
+   else
+	-- till here 
+     if (item.type == "flora") then
+       game.tool_plop_flora(tonumber(item.iid,16))
+     else
+	if (item.type == "network") then
+	  game.tool_plop_network(tonumber(item.iid,16))
+       else
+	  if (item.type == "zone") then
+	    game.tool_plop_zone(tonumber(item.iid,16))
+	  else
+	    game.tool_plop_building(tonumber(item.iid,16))
+	  end
+	end
+     end
+   end
+ end  
+
+ DAMenu.findItem = function(str)
+   local i = 0
+   local index = 0 
+   local x = {}
+   str = string.lower(str) 
+   repeat
+     index = string.find(str,"/")
+     if (index == nil) then
+       x[i] = str
+     else
+       x[i] = string.sub(str,0,index-1)
+       str = string.sub(str,index+1)
+       i = i + 1
+     end
+   until (index == nil)
+   
+   local menu = DAMenu.items[x[0]]
+   i = 1
+   while ((menu ~= nil) and (x[i] ~= nil)) do
+     menu = menu.items[x[i]]
+     i = i+1
+   end
+   return menu
+ end
+
+ DAMenu.itemCopy = function(item)
+   newItem = {}
+   for field in item do
+     newItem[field] = item[field]
+   end
+   return newItem
+ end
+
+ DAMenu.createItemNews = function(item)
+   if (item.hidden) then
+     a = create_reward_cityplanning(item.iid)
+     a.condition = function()
+       return reward_state.HIDDEN
+     end
+   end
+   if (item.description ~= nil) then
+     a = create_advice_cityplanning(string.format("%x",tonumber(item.iid,16)+1))
+     a.trigger  = "((news_trigger_ID == 'DAMenuItem') and (itemID == '" .. item.iid .. "'))"
+     a.frequency = 1
+     a.timeout = 5
+     a.title = [[text@dae1e773]]
+     a.message = item.description
+     a.priority  = 100
+     a.mood = advice_moods.NEUTRAL
+     a.once = 0
+     a.event = game_events.kTEST1 
+   end
+ end 
+
+-- ************* search function ****************** --
+-- we can not localize these texts
+ DAMenu.searchTitle = "${C2}"
+ DAMenu.searchBody = "${C3}"
+ DAMenu.searchAccept = function()
+   DAMenu.searchMenu = DAMenu.newMenu()
+   DAMenu.searchMenu.parent = DAMenu
+   DAMenu.lookup(string.lower(keyboardInput.currentword),DAMenu)
+   DAMenu.searchMenu.linkname = DAMenu.searchMenu.size .. " ${C4}"
+   DAMenu.currentMenu = DAMenu.searchMenu
+   DAMenu.trigger()
+ end
+
+ DAMenu.lookup = function(str,menu)
+   if (DAMenu.searchMenu.size < ${C5}) then 
+     for i=0,menu.size-1 do
+       if (menu.items[i].menu) then
+         DAMenu.lookup(str,menu.items[i])
+       else
+         if (string.find(string.lower(menu.items[i].linkname),str) ~= nil) then
+           DAMenu.addItem(DAMenu.searchMenu,DAMenu.itemCopy(menu.items[i]))
+         end
+       end -- else
+     end -- for
+   end -- if
+ end
+
+ -- ************** news utility ****************** --
+
+ DAMenu.getTitle = function()
+   return DAMenu.currentMenu.linkname
+ end
+
+ DAMenu.getLinkText = function(index,line)
+   if (index < DAMenu.currentMenu.size) then
+     if (line == 1) then
+       return " " .. DAMenu.currentMenu.items[index].linkname
+     else 
+       if (DAMenu.currentMenu.items[index].info[line-1] ~= "") then    
+         return " > " .. DAMenu.currentMenu.items[index].info[line-1]
+       end
+     end
+   end
+   return ""
+ end 
+
+ DAMenu.getLeftIcon = function(index)
+   --return DAMenu.icons.search
+   if (index < DAMenu.currentMenu.size) then
+     return DAMenu.currentMenu.items[index].icon
+   end
+   return ""
+ end   
+
+ DAMenu.getRightIcon = function(index)
+   if (index < DAMenu.currentMenu.size) then
+     if (not(DAMenu.currentMenu.items[index].menu)) then
+       if (DAMenu.currentMenu.items[index].description ~= nil) then
+         return DAMenu.icons.info
+       end
+     end
+   end
+   return ""
+ end  
+
+ DAMenu.open = function(index)
+   if (index < DAMenu.currentMenu.size) then
+     local item = DAMenu.currentMenu.items[index]
+     if (item.menu) then
+       DAMenu.currentMenu = item
+       DAMenu.trigger()
+     else
+       DAMenu.currentMenu = item
+       DAMenu.triggerItem()
+     end
+   end
+ end
+
+ DAMenu.plop = function(index)
+   if (index == nil) then
+     local item = DAMenu.currentMenu
+     if (not (item.menu)) then
+       DAMenu.itemCursor(item)
+       DAMenu.currentMenu = DAMenu.currentMenu.parent
+     end
+   else
+     if (type(index) == "number") then
+       if (index < DAMenu.currentMenu.size) then
+         local item = DAMenu.currentMenu.items[index]
+         if (item.menu) then
+           DAMenu.currentMenu = item
+           DAMenu.trigger()
+         else
+           DAMenu.itemCursor(item)
+         end
+       end
+     end
+   end   
+ end
+
+ DAMenu.up = function() -- up one level
+   DAMenu.currentMenu = DAMenu.currentMenu.parent
+   DAMenu.trigger()
+ end  
+
+ DAMenu.root = function() -- back to root level
+   DAMenu.currentMenu = DAMenu
+   DAMenu.trigger()
+ end  
+
+ DAMenu.trigger = function()
+   if (not (DAMenu.currentMenu.menu)) then
+     DAMenu.currentMenu = DAMenu.currentMenu.parent
+   end
+   DAMenu.op = true
+   set_news_ID("DAMenu")
+   game.trigger_event(game_events.kTEST1)
+ end
+
+  DAMenu.triggerItem = function()
+   itemID = DAMenu.currentMenu.iid 
+   set_news_ID("DAMenuItem")
+   game.trigger_event(game_events.kTEST1)
+ end
+
+-->> build from directory structure <<--
+
+ function DAMenu.interpret(path)
+
+  local _,i = string.find(path,"Root\\")
+  local relpath = string.sub(path,i+1)
+
+  local menu = DAMenu
+  while (i) do
+    _,i = string.find(relpath,"\\")
+    if (i) then  
+      local folder = string.sub(relpath,0,i-1)
+      -- interpret folder
+      local submenu = menu.items[string.lower(folder)]
+      if (not submenu) then
+        submenu = DAMenu.addMenu(menu,folder)
+      end
+      menu = submenu
+      relpath = string.sub(relpath,i+1)
+    end
+  end
+  
+  -- create link from root to relative menu
+  DAMenu.items[relpath] = menu 
+
+ end
+
+ -- os.execute("echo off & del list.txt & for /R %i in (*.damn.lua) do echo %i >> list.txt") -- game loses focus :(
+ local luainput = io.open([[Plugins/DAMN/Support/DAMN-index.txt]])
+ local line = 1 
+ while (line) do
+  line = luainput:read("*l")
+  if (line) then
+   DAMenu.interpret(line)
+  end
+ end
+
+ DAMenu.currentMenu = DAMenu
+
+end
+[/TEMPLATE]

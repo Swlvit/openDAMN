@@ -1,0 +1,76 @@
+[TEMPLATE]
+UI
+00000000
+96A006B0
+2A2AED99
+# Variables: H0,H1,H2,W0,W1,W2,W3,W4,W5,W6,W7,W8
+<LEGACY clsid=0x89e1567c iid=IGZWinGen id=0xca2aedc0 area=(270,783,1027,1054) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=no winflag_sizeable=no winflag_sortable=no winflag_pbuff=no winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=yes winflag_ignoremouse=no blttype=tiled userdata=0 moveable=no sizeable=no defaultkeys=no closevisible=no gobackvisible=no minmaxvisible=no closedisabled=no gobackdisabled=no minmaxdisabled=no titlebar=no fill=no outline=no paint=yes sidebar=no gutters=(64,64) >
+<CHILDREN>
+	<LEGACY clsid=GZWinCustom iid=IGZWinCustom id=0x0000aaaa area=(320,1,354,35) fillcolor=(119,119,119) caption="0xaa6767aa" winflag_visible=no winflag_enabled=yes winflag_moveable=no winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no >
+	<LEGACY clsid=GZWinBMP iid=IGZWinBMP id=0x6a2aedca area=(0,0,757,43) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,144161f0} imagerect=(0,0,757,43) notify=no transparentbkg=yes edgeimage=no >
+	<LEGACY clsid=GZWinFlatRect iid=IGZWinFlatRect id=0xca2aeec0 area=(35,5,711,38) fillcolor=(221,238,238) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=yes colorleft=(0,0,0) colortop=(0,0,0) colorright=(0,0,0) colorbottom=(0,0,0) >
+	<CHILDREN>
+		<LEGACY clsid=0xca1492ac iid=IGZWinCustom id=0xaa12f33c area=(0,0,676,54) fillcolor=(222,232,227) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=yes >
+	</CHILDREN>
+	<LEGACY clsid=GZWinBtn iid=IGZWinBtn id=0xca2aedcd area=(28,3,718,40) fillcolor=(192,192,192) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=no winflag_pbufferase=no winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,14416241} colorfontnormal=(0,0,0) colorfontdisabled=(0,0,0) colorfonthilited=(0,0,0) colorfontnormalbkg=(0,0,0) colorfontdisabledbkg=(0,0,0) colorfonthilitedbkg=(0,0,0) toggle=off triggerondown=off showcaption=no fill=yes autosize=no wrapcaption=no shiftcaption=yes tips=no tipsdelay=no tipstimeout=no style=standard gutters=(0,0,0,0) tiptext="" tipoffsets=(0,0) tipflag=0x01000000 align=center btnclicksnd={ca4d1943,8a5c321b} >
+	<LEGACY clsid=GZWinBtn iid=IGZWinBtn id=0xca2aedcc area=(721,6,753,38) fillcolor=(204,204,204) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,144161f7} colorfontnormal=(0,0,0) colorfontdisabled=(0,0,0) colorfonthilited=(0,0,0) colorfontnormalbkg=(0,0,0) colorfontdisabledbkg=(0,0,0) colorfonthilitedbkg=(0,0,0) toggle=off triggerondown=off showcaption=no fill=yes autosize=no wrapcaption=no shiftcaption=yes tips=yes tipsdelay=no tipstimeout=no style=standard gutters=(0,0,0,0) tiptext="Open News Window|Opens the News Window where you can read the stories behind the headlines." tipres={6a231eaa,ea8713e6} tipoffsets=(0,0) tipflag=0x01000000 align=center btnclicksnd={ca4d1943,8a5ec047} >
+</CHILDREN>
+<LEGACY clsid=GZWinGen iid=IGZWinGen id=0xaa231508 area=(204,7,${W1},${H1}) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=no winflag_pbufftrans=no winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=yes winflag_ignoremouse=no image={46a006b0,3b485503} blttype=normal userdata=0 moveable=yes sizeable=no defaultkeys=no closevisible=no gobackvisible=no minmaxvisible=no closedisabled=no gobackdisabled=no minmaxdisabled=no titlebar=no fill=yes outline=no paint=yes sidebar=no gutters=(64,64) >
+<CHILDREN>
+	<LEGACY clsid=GZWinBMP iid=IGZWinBMP area=(16,6,${W2},34) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=yes image={46a006b0,3b485503} imagerect=(16,6,${W0},${H0}) notify=no transparentbkg=yes edgeimage=no >
+	<CHILDREN>
+		<LEGACY clsid=GZWinText iid=IGZWinText id=0x0a231529 area=(0,0,${W3},28) fillcolor=(0,136,0) caption="News" captionres={6a231eaa,cab65e23} winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=no winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=yes font=GenHeader align=lefttop notify=no wrapped=no opaque=no forecolor=(51,68,102) bkgcolor=(0,0,0) gutters=(2,2) textoffsets=(0,0) >
+	</CHILDREN>
+	<LEGACY clsid=GZWinBtn iid=IGZWinBtn id=0x4a231510 area=(${W4},11,${W5},31) fillcolor=(204,204,204) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,144161f9} colorfontnormal=(0,0,0) colorfontdisabled=(0,0,0) colorfonthilited=(0,0,0) colorfontnormalbkg=(0,0,0) colorfontdisabledbkg=(0,0,0) colorfonthilitedbkg=(0,0,0) toggle=off triggerondown=off showcaption=no fill=yes autosize=no wrapcaption=no shiftcaption=yes tips=yes tipsdelay=no tipstimeout=no style=standard gutters=(0,0,0,0) tiptext="Close" tipres={6a231eaa,ea6f7d31} tipoffsets=(0,0) tipflag=0x01000000 align=center btnclicksnd={ca47efd9,ca5c3239} >
+	<LEGACY clsid=0xca1492ac iid=IGZWinCustom id=0x6a231531 area=(14,37,${W6},${H2}) fillcolor=(218,224,229) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no >
+	<LEGACY clsid=GZWinBtn iid=IGZWinBtn id=0x0a231518 area=(${W7},72,${W8},172) fillcolor=(192,192,192) caption="delete me" winflag_visible=no winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,e2b66db8} colorfontnormal=(0,0,0) colorfontdisabled=(0,0,0) colorfonthilited=(0,0,0) colorfontnormalbkg=(0,0,0) colorfontdisabledbkg=(0,0,0) colorfonthilitedbkg=(0,0,0) toggle=off triggerondown=off showcaption=yes fill=yes autosize=no wrapcaption=no shiftcaption=yes tips=no tipsdelay=no tipstimeout=no style=standard gutters=(0,0,0,0) tiptext="" tipoffsets=(0,0) tipflag=0x01000000 align=center btnclicksnd={ca4d1943,8a5c321b} >
+</CHILDREN>
+[/TEMPLATE]
+[TEMPLATE]
+UI
+00000000
+96A006B0
+4A5A89D5
+# Variables: X1,X2,X3,X4,X5,X6,X7,X8
+<LEGACY clsid=GZWinGen iid=IGZWinGen id=0x4a9db60c area=(0,0,${X1},450) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=yes winflag_sortable=no winflag_pbuff=no winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,dae1e730} blttype=edge userdata=0 moveable=yes sizeable=yes defaultkeys=no closevisible=no gobackvisible=no minmaxvisible=no closedisabled=no gobackdisabled=no minmaxdisabled=no titlebar=no fill=yes outline=no paint=yes sidebar=no gutters=(64,64) >
+<CHILDREN>
+<LEGACY clsid=0xaa12e5f5 iid=IGZWinCustom id=0x00000002 area=(12,12,${X2},436) fillcolor=(225,244,255) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=yes winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no >
+	<LEGACY clsid=GZWinGen iid=IGZWinGen id=0x00000004 area=(${X3},11,${X4},98) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=no winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=no winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no blttype=tiled userdata=0 moveable=yes sizeable=no defaultkeys=yes closevisible=yes gobackvisible=no minmaxvisible=no closedisabled=no gobackdisabled=no minmaxdisabled=no titlebar=no fill=no outline=no paint=yes sidebar=no gutters=(4,4) >
+	<LEGACY clsid=GZWinBMP iid=IGZWinBMP id=0x00000003 area=(${X5},10,${X6},104) fillcolor=(0,0,0) winflag_visible=yes winflag_enabled=yes winflag_moveable=no winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,144161f4} imagerect=(0,0,87,94) notify=no transparentbkg=yes edgeimage=no >
+	<LEGACY clsid=GZWinBtn iid=IGZWinBtn id=0x4a231510 area=(${X7},412,${X8},432) fillcolor=(204,204,204) winflag_visible=yes winflag_enabled=yes winflag_moveable=yes winflag_sizeable=no winflag_sortable=no winflag_pbuff=yes winflag_pbufftrans=yes winflag_pbufferase=yes winflag_pbuffvid=no winflag_alphablend=yes winflag_acceptfocus=yes winflag_mousetrans=no winflag_ignoremouse=no image={46a006b0,144161f9} colorfontnormal=(0,0,0) colorfontdisabled=(0,0,0) colorfonthilited=(0,0,0) colorfontnormalbkg=(0,0,0) colorfontdisabledbkg=(0,0,0) colorfonthilitedbkg=(0,0,0) toggle=off triggerondown=off showcaption=no fill=yes autosize=no wrapcaption=no shiftcaption=yes tips=yes tipsdelay=no tipstimeout=no style=standard gutters=(0,0,0,0) tiptext="Close" tipres={6a231eaa,ea6f7d31} tipoffsets=(0,0) tipflag=0x01000000 align=center btnclicksnd={ca47efd9,ca5c3239} >
+</CHILDREN>
+[/TEMPLATE]
+[TEMPLATE]
+LTEXT
+2026960B
+6A231EA4
+DAE1E773
+# Variables: T1
+<table border="0"><tr><td>${T1}#DAMenu.getTitle()#</td><td width="100"><a href="#link_id#game.retire_advice();DAMenu.up()"><img src="#DAMenu.icons.back#"></a><a href="#link_id#game.retire_advice();DAMenu.root()"><img src="#DAMenu.icons.home#"></a><a href="#link_id#keyboardInput.trigger(DAMenu.searchAccept,DAMenu.searchTitle,DAMenu.searchBody)"><img src="#DAMenu.icons.search#"></a></td></tr></table><hr>
+[/TEMPLATE]
+[TEMPLATE]
+LTEXT
+2026960B
+6A231EA4
+DAE1E774
+# Variables: NR,WIDTH
+<td width="44"><a href="#link_id#game.retire_advice();DAMenu.plop(${NR})"><img src="#DAMenu.getLeftIcon(${NR})#" align="top"></a></td>
+<td width="${WIDTH}">#DAMenu.getLinkText(${NR},1)#<br><font size="2">#DAMenu.getLinkText(${NR},2)#<br>#DAMenu.getLinkText(${NR},3)#</font></td>
+<td width="44"><a href="#link_id#game.retire_advice();DAMenu.open(${NR})"><img src="#DAMenu.getRightIcon(${NR})#" align="top"></a></td>
+[/TEMPLATE]
+[TEMPLATE]
+LTEXT
+2026960B
+6A231EA4
+DAE1E775
+# Variables: T2
+<a href="#link_id#DAMenu.trigger()">${T2}</a><br>
+[/TEMPLATE]
+[TEMPLATE]
+LTEXT
+2026960B
+6A231EA4
+DAE1E776
+# Variables: T3
+${T3}
+[/TEMPLATE]
