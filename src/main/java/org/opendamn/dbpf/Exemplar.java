@@ -72,7 +72,11 @@ public final class Exemplar {
     public static Exemplar parse(byte[] d) {
         if (!looksLikeExemplar(d)) throw new DbpfException("Not an exemplar");
         boolean cohort = d[0] == 'C';
-        return d[3] == 'B' ? parseBinary(d, cohort) : parseText(d, cohort);
+        try {
+            return d[3] == 'B' ? parseBinary(d, cohort) : parseText(d, cohort);
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            throw new DbpfException("Malformed exemplar: " + e.getMessage(), e);
+        }
     }
 
     private static Exemplar parseBinary(byte[] d, boolean cohort) {
@@ -202,15 +206,18 @@ public final class Exemplar {
         if (type == PropertyType.BOOL) {
             return v.equalsIgnoreCase("true") || v.equals("1") || v.equalsIgnoreCase("0x01") ? 1 : 0;
         }
+        boolean hex = v.startsWith("0x") || v.startsWith("0X");
+        String digits = hex ? v.substring(2) : v;
         if (type == PropertyType.FLOAT32) {
-            if (v.startsWith("0x")) return Long.parseLong(v.substring(2), 16) & 0xFFFFFFFFL;
+            if (hex) return Long.parseUnsignedLong(digits, 16) & 0xFFFFFFFFL;
             return Float.floatToRawIntBits(Float.parseFloat(v)) & 0xFFFFFFFFL;
         }
+        // Reader-style text exemplars write integers as hex, with or without "0x".
         long r;
-        if (v.startsWith("0x") || v.startsWith("0X")) {
-            r = Long.parseUnsignedLong(v.substring(2), 16);
+        if (hex || digits.matches(".*[a-fA-F].*") || digits.length() == type.width * 2) {
+            r = Long.parseUnsignedLong(digits, 16);
         } else {
-            r = Long.parseLong(v);
+            r = Long.parseLong(digits);
         }
         return switch (type) {
             case SINT32 -> (int) r;

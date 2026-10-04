@@ -57,6 +57,15 @@ public final class HiddenLots {
      */
     public static Result rebuild(List<MenuNode> menus, PluginIndex index, Path hiddenDir, SaveFormat format)
             throws IOException {
+        return rebuildInto(menus, index, hiddenDir, hiddenDir, format);
+    }
+
+    /**
+     * Like {@link #rebuild} but writes into {@code outDir}; {@code hiddenDir} is only used to
+     * recognise (and skip) existing copies when looking for the original exemplars.
+     */
+    public static Result rebuildInto(List<MenuNode> menus, PluginIndex index, Path hiddenDir, Path outDir,
+                                     SaveFormat format) throws IOException {
         List<String> problems = new ArrayList<>();
         Path hiddenAbs = hiddenDir.toAbsolutePath().normalize();
 
@@ -83,7 +92,14 @@ public final class HiddenLots {
                     problems.add("Not installed, cannot hide: " + item.getValue().linkName() + " (" + item.getKey() + ")");
                     continue;
                 }
-                Exemplar ex = PluginIndex.readExemplar(orig);
+                Exemplar ex;
+                try {
+                    ex = PluginIndex.readExemplar(orig);
+                } catch (RuntimeException bad) {
+                    problems.add("Cannot read exemplar of " + item.getValue().linkName() + " in "
+                            + orig.file().path().getFileName() + ": " + bad.getMessage());
+                    continue;
+                }
                 boolean removed = ex.remove(Exemplar.P_LOT_RESOURCE_KEY) != null;
                 removed |= ex.remove(Exemplar.P_ITEM_BUTTON_ID) != null;
                 if (!removed) {
@@ -102,16 +118,16 @@ public final class HiddenLots {
             if (!w.isEmpty()) out.put(e.getKey(), w);
         }
 
-        Files.createDirectories(hiddenDir);
+        Files.createDirectories(outDir);
         int written = 0;
         for (var e : out.entrySet()) {
-            e.getValue().write(hiddenDir.resolve(e.getKey()));
+            e.getValue().write(outDir.resolve(e.getKey()));
             written++;
         }
         int removedFiles = 0;
         Set<String> keep = new HashSet<>();
         for (String k : out.keySet()) keep.add(k.toLowerCase(Locale.ROOT));
-        try (Stream<Path> s = Files.list(hiddenDir)) {
+        try (Stream<Path> s = Files.list(outDir)) {
             for (Path p : (Iterable<Path>) s::iterator) {
                 if (Files.isRegularFile(p) && isManagedFile(p)
                         && !keep.contains(p.getFileName().toString().toLowerCase(Locale.ROOT))) {
