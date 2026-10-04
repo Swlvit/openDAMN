@@ -37,8 +37,6 @@ import org.opendamn.util.Log;
 public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuTreePanel.Actions, MenuItemsPanel.Actions {
 
     final AppContext ctx;
-    private SandboxSetup.Paths sandbox;
-    private javax.swing.Action applySandbox;
     private final PluginFolderPanel folders;
     private final LotsPanel lots;
     private final LotDetailsPanel lotDetails;
@@ -113,17 +111,6 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
                 e -> save()));
         file.addSeparator();
         file.add(Ui.action("Game and plugin folders…", null, null, e -> Dialogs.setupPaths(this, ctx, false)));
-        applySandbox = Ui.action("Apply sandbox to real install…", "Copy sandbox changes back to your real folders",
-                null, e -> {
-            if (sandbox != null) {
-                SandboxSetup.applyToReal(this, sandbox, 
-                        ctx.settings.getPath(Settings.GAME_DIR),
-                        ctx.userPlugins(),
-                        ctx.settings.get(Settings.HIDDEN_FOLDER, "zzzzzz_DAMN_Hidden"));
-            }
-        });
-        applySandbox.setEnabled(false);
-        file.add(applySandbox);
         file.add(Ui.action("Settings…", null, KeyStroke.getKeyStroke("ctrl COMMA"), e -> Dialogs.settings(this, ctx)));
         file.addSeparator();
         file.add(Ui.action("Exit", null, KeyStroke.getKeyStroke("ctrl Q"), e -> exit()));
@@ -175,10 +162,6 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
 
     /** Called once the window is visible: checks paths, loads menus, builds the index. */
     public void start() {
-
-    }
-
-    void start(boolean offerSandbox) {
         if (ctx.gameDir() == null || !Files.isDirectory(ctx.gameDir())) {
             if (!Dialogs.setupPaths(this, ctx, true)) {
                 status.setText("Choose the game folder in File > Game and plugin folders.");

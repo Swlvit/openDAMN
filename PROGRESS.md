@@ -36,3 +36,19 @@ Java 21 + Swing (FlatLaf), Gradle (`./gradlew build`, run: `./gradlew run`).
 ## Sandbox mode
 - SandboxSetup copies DAMN+hidden to /tmp, symlinks game+plugins (read-only).
 - User can experiment safely, then apply changes back with File > Apply sandbox.
+
+## Next steps
+1. Test the GUI interactively in sandbox mode
+2. Fix any runtime issues (threading, null checks, dialog flows)
+3. User testing on real install (read-only first)
+4. Document usage and package for release
+
+## Current status
+All core features compile:
+- DBPF read/write with QFS compression
+- Menu file loading/saving with crash-safe backups
+- Hidden lots: rebuild verified byte-exact, removes buttons correctly
+- Plugin index: 60k files in ~5s, cached to ~1.6s
+- Installer: generates damnControl/Design.dat with correct window geometry
+- Full Swing UI with FlatLaf, sandbox mode ready
+- Ready for first interactive test with ./run-sandbox.sh

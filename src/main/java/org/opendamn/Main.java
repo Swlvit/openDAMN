@@ -14,7 +14,6 @@ public final class Main {
     private Main() {}
 
     public static void main(String[] args) {
-        boolean sandbox = args.length > 0 && args[0].equals("--sandbox");
         Settings settings = Settings.load();
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             Log.severe("Unexpected error in " + t.getName(), e);
