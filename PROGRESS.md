@@ -32,3 +32,7 @@ Java 21 + Swing (FlatLaf), Gradle (`./gradlew build`, run: `./gradlew run`).
 
 ## Tests
 `OPENDAMN_DAMN_SAMPLE=".../example_working_installed_damn/Installed Directory/DAMN" OPENDAMN_SAMPLES="<plugins>" ./gradlew test`
+
+## Sandbox mode
+- SandboxSetup copies DAMN+hidden to /tmp, symlinks game+plugins (read-only).
+- User can experiment safely, then apply changes back with File > Apply sandbox.

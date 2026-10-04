@@ -28,6 +28,8 @@ public final class AppContext {
 
     private Path gameDir;
     private Path userPlugins;
+    private Path overrideDamnDir;
+    private Path overrideHiddenDir;
     private Path browseRoot;
     private DamnMenus menus;
     private PluginIndex index = PluginIndex.empty();
