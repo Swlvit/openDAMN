@@ -27,6 +27,7 @@ import org.opendamn.damn.DamnMenus;
 import org.opendamn.damn.ItemTemplate;
 import org.opendamn.damn.MenuItem;
 import org.opendamn.damn.MenuNode;
+import org.opendamn.sc4.GamePaths;
 import org.opendamn.sc4.HiddenLots;
 import org.opendamn.sc4.LotInfo;
 import org.opendamn.sc4.PluginIndex;
@@ -163,9 +164,22 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
     /** Called once the window is visible: checks paths, loads menus, builds the index. */
     public void start() {
         if (ctx.gameDir() == null || !Files.isDirectory(ctx.gameDir())) {
-            if (!Dialogs.setupPaths(this, ctx, true)) {
-                status.setText("Choose the game folder in File > Game and plugin folders.");
-                return;
+            // Use the detected installation directly; only ask when nothing was found.
+            List<GamePaths.Install> found = GamePaths.detect();
+            if (!found.isEmpty()) {
+                GamePaths.Install i = found.get(0);
+                ctx.setPaths(i.gameDir(), i.userPlugins());
+                if (ctx.settings.get(Settings.HIDDEN_FOLDER, null) == null) {
+                    ctx.settings.set(Settings.HIDDEN_FOLDER, Dialogs.detectHiddenFolder(i.userPlugins()));
+                    ctx.settings.save();
+                }
+                Log.info("Using " + i.gameDir() + " and " + i.userPlugins());
+            } else {
+                toFront();
+                if (!Dialogs.setupPaths(this, ctx, true)) {
+                    status.setText("Choose the game folder in File > Game and plugin folders.");
+                    return;
+                }
             }
         }
         reloadAll();
