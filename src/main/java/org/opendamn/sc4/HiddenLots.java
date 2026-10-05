@@ -98,7 +98,7 @@ public final class HiddenLots {
                 Exemplar ex;
                 try {
                     ex = PluginIndex.readExemplar(orig);
-                } catch (RuntimeException bad) {
+                } catch (IOException | RuntimeException bad) {
                     problems.add("Cannot read exemplar of " + item.getValue().linkName() + " in "
                             + orig.file().path().getFileName() + ": " + bad.getMessage());
                     continue;

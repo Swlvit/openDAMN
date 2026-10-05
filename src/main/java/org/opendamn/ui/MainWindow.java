@@ -549,8 +549,12 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
         if (itemDetails.hasPendingEdits()) itemDetails.apply();
         Path hiddenDir = ctx.hiddenDir();
         HiddenLots.SaveFormat fmt = HiddenLots.SaveFormat.valueOf(ctx.settings.get(Settings.HIDE_FORMAT, "ORIGINAL"));
-        PluginIndex idx = ctx.index();
+        List<Path> roots = ctx.indexRoots();
         Ui.runWithProgress(this, "Saving", p -> {
+            // Plugins may have been added or removed since the last scan.
+            p.message("Checking plugins…");
+            PluginIndex idx = PluginIndex.build(roots, ctx.settings.cacheFile(), (d, t, c) -> p.update(d, t, c.toString()));
+            javax.swing.SwingUtilities.invokeLater(() -> ctx.setIndex(idx));
             p.message("Writing menus…");
             DamnMenus.SaveResult r = m.save(ctx.settings.backupDir(), it -> Images.placeholderIcon(it.linkName()));
             HiddenLots.Result h = null;
@@ -593,9 +597,14 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
                 + "\nfrom the currently installed plugins?")) return;
         HiddenLots.SaveFormat fmt = HiddenLots.SaveFormat.valueOf(ctx.settings.get(Settings.HIDE_FORMAT, "ORIGINAL"));
         DamnMenus m = ctx.menus();
+        List<Path> roots = ctx.indexRoots();
+        Path hidden = ctx.hiddenDir();
         Ui.runWithProgress(this, "Updating hidden lots", p -> {
             for (MenuNode n : m.root().descendantsAndSelf()) m.ensureLoaded(n);
-            return HiddenLots.rebuild(m.root().descendantsAndSelf(), ctx.index(), ctx.hiddenDir(), fmt);
+            p.message("Checking plugins…");
+            PluginIndex idx = PluginIndex.build(roots, ctx.settings.cacheFile(), (d, t, c) -> p.update(d, t, c.toString()));
+            javax.swing.SwingUtilities.invokeLater(() -> ctx.setIndex(idx));
+            return HiddenLots.rebuild(m.root().descendantsAndSelf(), idx, hidden, fmt);
         }, h -> {
             String msg = h.hidden() + " lot(s) hidden in " + h.filesWritten() + " file(s); " + h.filesRemoved()
                     + " old file(s) removed.";
