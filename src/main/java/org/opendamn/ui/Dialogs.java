@@ -270,6 +270,9 @@ final class Dialogs {
         JComboBox<Integer> height = new JComboBox<>(new Integer[] {450, 700, 1000});
         height.setEditable(true);
         height.setSelectedItem(cur.newsHeight());
+        JComboBox<Integer> uheight = new JComboBox<>(new Integer[] {450, 600, 800, 1000, 1200});
+        uheight.setEditable(true);
+        uheight.setSelectedItem(cur.urgentHeight());
         JSpinner max = new JSpinner(new SpinnerNumberModel(cur.maxItems(), 1, 500, 1));
         JCheckBox reduce = check("Reduce the number of news messages (news filter)", cur.reduceNews());
         JCheckBox defaults = check("Create the standard menu structure (Civic, Commercial, Transport, …)", false);
@@ -277,14 +280,15 @@ final class Dialogs {
         JLabel size = new JLabel();
         Runnable upd = () -> {
             try {
-                DamnInstaller.Config c = cfg(urgent, cols, width, height, max, reduce);
+                DamnInstaller.Config c = cfg(urgent, cols, width, height, uheight, max, reduce);
                 size.setText("In-game window: " + c.windowWidth() + " x " + c.windowHeight() + " pixels");
                 height.setEnabled(!c.urgentAdvice());
+                uheight.setEnabled(c.urgentAdvice());
             } catch (RuntimeException e) {
                 size.setText("Invalid value");
             }
         };
-        for (var comp : new JComponent[] {urgent, news, width, height}) {
+        for (var comp : new JComponent[] {urgent, news, width, height, uheight}) {
             if (comp instanceof JComboBox<?> cb) cb.addActionListener(e -> upd.run());
             if (comp instanceof JRadioButton rb) rb.addActionListener(e -> upd.run());
         }
@@ -299,6 +303,7 @@ final class Dialogs {
         addRow(p, c, y++, "", news);
         addRow(p, c, y++, "Columns", cols);
         addRow(p, c, y++, "Column width (px)", width);
+        addRow(p, c, y++, "Window height (urgent advice, px)", uheight);
         addRow(p, c, y++, "Window height (news ticker, px)", height);
         addRow(p, c, y++, "Entries per menu (items + submenus)", max);
         addRow(p, c, y++, null, size);
@@ -310,7 +315,7 @@ final class Dialogs {
                 JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) return;
         DamnInstaller.Config cfg;
         try {
-            cfg = cfg(urgent, cols, width, height, max, reduce);
+            cfg = cfg(urgent, cols, width, height, uheight, max, reduce);
         } catch (RuntimeException e) {
             Ui.error(w, "DAMN", "Please enter valid numbers.");
             return;
@@ -319,10 +324,12 @@ final class Dialogs {
     }
 
     private static DamnInstaller.Config cfg(JRadioButton urgent, JSpinner cols, JComboBox<Integer> width,
-                                            JComboBox<Integer> height, JSpinner max, JCheckBox reduce) {
+                                            JComboBox<Integer> height, JComboBox<Integer> uheight, JSpinner max,
+                                            JCheckBox reduce) {
         return new DamnInstaller.Config(urgent.isSelected(), (Integer) cols.getValue(),
                 Integer.parseInt(String.valueOf(width.getSelectedItem()).trim()),
-                Integer.parseInt(String.valueOf(height.getSelectedItem()).trim()), (Integer) max.getValue(),
+                Integer.parseInt(String.valueOf(height.getSelectedItem()).trim()),
+                Integer.parseInt(String.valueOf(uheight.getSelectedItem()).trim()), (Integer) max.getValue(),
                 reduce.isSelected());
     }
 

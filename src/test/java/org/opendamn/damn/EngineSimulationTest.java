@@ -141,6 +141,19 @@ class EngineSimulationTest {
         }
     }
 
+    @Test
+    void urgentWindowHeightIsWrittenAndReadBack(@TempDir Path tmp) throws Exception {
+        Path damn = tmp.resolve("DAMN");
+        DamnInstaller.Config c = new DamnInstaller.Config(true, 4, 400, 1000, 1100, 100, false);
+        DamnInstaller.install(damn, c, DamnInstaller.Texts.english(), List.of(), null);
+        assertEquals(c, DamnInstaller.readConfig(damn));
+        String ui = new String(DbpfFile.open(damn.resolve("Support/damndesign.dat")).read(DamnInstaller.UI_URGENT),
+                DamnInstaller.LUA_CHARSET);
+        assertTrue(ui.contains("area=(0,0,1714,1100)"), ui.substring(0, 300));
+        assertTrue(ui.contains("area=(12,12,1612,1086)"));
+        assertTrue(ui.contains("area=(1624,1062,1646,1082)"));
+    }
+
     /** Full real-data run: OPENDAMN_DAMN_SAMPLE must point to a DAMN folder (copied, never modified). */
     @Test
     void realMenusInEngine(@TempDir Path tmp) throws Exception {

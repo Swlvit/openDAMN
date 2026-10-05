@@ -41,17 +41,18 @@ public final class DamnInstaller {
     static final Tgi LT_MORE = new Tgi(Tgi.TYPE_LTEXT, Tgi.GROUP_LTEXT_HTML, 0xDAE1E776);
 
     /** In-game window configuration. */
-    public record Config(boolean urgentAdvice, int columns, int columnWidth, int newsHeight, int maxItems,
-                         boolean reduceNews) {
+    public record Config(boolean urgentAdvice, int columns, int columnWidth, int newsHeight, int urgentHeight,
+                         int maxItems, boolean reduceNews) {
         public Config {
             columns = clamp(columns, 1, 6);
             columnWidth = clamp(columnWidth, 200, 600);
-            newsHeight = clamp(newsHeight, 300, 1400);
+            newsHeight = clamp(newsHeight, 300, 2000);
+            urgentHeight = clamp(urgentHeight, 300, 2000);
             maxItems = clamp(maxItems, 1, 500);
         }
 
         public static Config defaults() {
-            return new Config(true, 2, 400, 450, 50, true);
+            return new Config(true, 2, 400, 450, 450, 50, true);
         }
 
         /** Window width in pixels as written to the game UI. */
@@ -60,7 +61,7 @@ public final class DamnInstaller {
         }
 
         public int windowHeight() {
-            return urgentAdvice ? 450 : newsHeight;
+            return urgentAdvice ? urgentHeight : newsHeight;
         }
     }
 
@@ -154,7 +155,10 @@ public final class DamnInstaller {
                     Pattern.DOTALL).matcher(lua);
             boolean urgent = !p.find() || !p.group(1).equals("0");
             boolean reduce = Files.exists(supportFile(damnDir, NEWS_FILTER));
-            return new Config(urgent, cols, cw, height, cells > 0 ? cells : d.maxItems(), reduce);
+            String urg = new String(ds.read(UI_URGENT), LUA_CHARSET);
+            Matcher uhm = Pattern.compile("id=0x4a9db60c[^>]*?area=\\(0,0,\\d+,(\\d+)\\)").matcher(urg);
+            int uh = uhm.find() ? Integer.parseInt(uhm.group(1)) : 450;
+            return new Config(urgent, cols, cw, height, uh, cells > 0 ? cells : d.maxItems(), reduce);
         } catch (IOException | RuntimeException e) {
             return d;
         }
@@ -166,7 +170,13 @@ public final class DamnInstaller {
         Map<Tgi, byte[]> entries = entries(base, target);
         Map<String, String> templates = templates("Template_damnDesign.txt");
         int b = cfg.columns() * cfg.columnWidth() + 114;
-        String urgent = fill(templates.get("UI " + UI_URGENT), "X", 1,
+        int uh = cfg.urgentHeight();
+        // The original template has a fixed height of 450; scale its frame, panel and close button.
+        String urgentTpl = templates.get("UI " + UI_URGENT)
+                .replace("area=(0,0,${X1},450)", "area=(0,0,${X1}," + uh + ")")
+                .replace("area=(12,12,${X2},436)", "area=(12,12,${X2}," + (uh - 14) + ")")
+                .replace("area=(${X7},412,${X8},432)", "area=(${X7}," + (uh - 38) + ",${X8}," + (uh - 18) + ")");
+        String urgent = fill(urgentTpl, "X", 1,
                 b, b - 102, b - 90, b - 9, b - 91, b - 6, b - 90, b - 68);
         int n = cfg.columns() * cfg.columnWidth() + 80;
         int hh = cfg.newsHeight();
