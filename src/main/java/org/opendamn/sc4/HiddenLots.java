@@ -71,6 +71,7 @@ public final class HiddenLots {
 
         // Each hidden lot goes into the file of the first menu that contains it.
         Map<String, Map<Tgi, MenuItem>> perFile = new LinkedHashMap<>();
+        Map<String, String> fileMenu = new HashMap<>();
         Set<Tgi> assigned = new HashSet<>();
         for (MenuNode n : menus) {
             for (MenuItem it : n.items()) {
@@ -78,6 +79,7 @@ public final class HiddenLots {
                 if (it.kind() == MenuItem.Kind.NETWORK || it.kind() == MenuItem.Kind.ZONE) continue;
                 if (assigned.add(it.exemplarTgi())) {
                     perFile.computeIfAbsent(fileNameFor(n), k -> new LinkedHashMap<>()).put(it.exemplarTgi(), it);
+                    fileMenu.putIfAbsent(fileNameFor(n), n.displayPath());
                 }
             }
         }
@@ -89,7 +91,8 @@ public final class HiddenLots {
             for (var item : e.getValue().entrySet()) {
                 PluginIndex.Located orig = originalOf(index, item.getKey(), hiddenAbs);
                 if (orig == null) {
-                    problems.add("Not installed, cannot hide: " + item.getValue().linkName() + " (" + item.getKey() + ")");
+                    problems.add("Not installed, cannot hide: " + item.getValue().linkName() + "  [" + item.getKey()
+                            + "]  in menu " + fileMenu.get(e.getKey()));
                     continue;
                 }
                 Exemplar ex;

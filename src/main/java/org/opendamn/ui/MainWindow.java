@@ -285,6 +285,7 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
             List<LotInfo> found = (List<LotInfo>) r[0];
             @SuppressWarnings("unchecked")
             List<String> errors = (List<String>) r[1];
+            lots.setMenuMembership(menuMembership());
             lots.setLots(found);
             for (String e : errors) Log.warn(e);
             if (!errors.isEmpty() && ctx.settings.getBool(Settings.SHOW_LOT_ERRORS, false)) {
@@ -293,6 +294,20 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
             status.setText(found.size() + " lot(s) in " + sel.folder().getFileName()
                     + (sel.subfolders() ? " and subfolders" : ""));
         });
+    }
+
+    /** Lot key -> "Menu/Path (hidden)" for every lot in a loaded DAMN menu. */
+    private java.util.Map<String, String> menuMembership() {
+        java.util.Map<String, String> m = new java.util.HashMap<>();
+        if (ctx.menus() == null) return m;
+        for (MenuNode n : ctx.menus().root().descendantsAndSelf()) {
+            if (!n.itemsLoaded()) continue;
+            for (MenuItem it : n.items()) {
+                String v = n.displayPath().replaceFirst("^Root/?", "") + (it.hidden() ? " (hidden)" : "");
+                m.merge(it.key(), v, (a, b) -> a + "; " + b);
+            }
+        }
+        return m;
     }
 
     private void menuSelected(MenuNode n) {
@@ -400,6 +415,7 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
             items.show(target);
             items.select(added);
             tree.refreshLabels();
+            lots.setMenuMembership(menuMembership());
             String msg = "Added " + added.size() + " item(s) to " + target.displayPath()
                     + (dupes > 0 ? "; " + dupes + " already there" : "")
                     + (!overflow.isEmpty() ? "; " + overflow.size() + " left out (limit)" : "");

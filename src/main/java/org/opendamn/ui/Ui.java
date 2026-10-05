@@ -107,9 +107,10 @@ public final class Ui {
                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION;
     }
 
-    /** Shows a long list of lines in a scrollable dialog. */
+    /** Shows a long list of lines in a scrollable dialog, with copy and save buttons. */
     public static void showLines(Component parent, String title, String header, java.util.List<String> lines) {
-        JTextArea t = new JTextArea(String.join("\n", lines));
+        String text = String.join("\n", lines);
+        JTextArea t = new JTextArea(text);
         t.setEditable(false);
         t.setCaretPosition(0);
         JScrollPane sp = new JScrollPane(t);
@@ -117,7 +118,27 @@ public final class Ui {
         javax.swing.JPanel p = new javax.swing.JPanel(new java.awt.BorderLayout(4, 4));
         p.add(new JLabel(header), java.awt.BorderLayout.NORTH);
         p.add(sp);
-        JOptionPane.showMessageDialog(parent, p, title, JOptionPane.INFORMATION_MESSAGE);
+        Object[] opts = {"Copy to clipboard", "Save as text file…", "Close"};
+        while (true) {
+            int r = JOptionPane.showOptionDialog(parent, p, title, JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE, null, opts, opts[2]);
+            if (r == 0) {
+                java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
+                        .setContents(new java.awt.datatransfer.StringSelection(header + "\n" + text), null);
+            } else if (r == 1) {
+                javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
+                fc.setSelectedFile(new java.io.File(title.replaceAll("[^A-Za-z0-9 _-]", "").trim() + ".txt"));
+                if (fc.showSaveDialog(parent) == javax.swing.JFileChooser.APPROVE_OPTION) {
+                    try {
+                        java.nio.file.Files.writeString(fc.getSelectedFile().toPath(), header + "\n" + text + "\n");
+                    } catch (java.io.IOException e) {
+                        error(parent, title, e.getMessage());
+                    }
+                }
+            } else {
+                return;
+            }
+        }
     }
 
     public static Window windowOf(Component c) {

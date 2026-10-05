@@ -63,6 +63,8 @@ public final class LotsPanel extends JPanel {
     private final JScrollPane scroll;
     private LotFilters.Category activeFilter;
     private final Map<Object, Icon> icons = new HashMap<>();
+    /** Lot key -> menus containing it (for the "In DAMN menu" column). */
+    private Map<String, String> inMenus = Map.of();
 
     public LotsPanel(AppContext ctx, Actions actions, Consumer<LotInfo> onSelect) {
         super(new BorderLayout(2, 2));
@@ -79,6 +81,7 @@ public final class LotsPanel extends JPanel {
         table.getColumnModel().getColumn(2).setPreferredWidth(150);
         table.getColumnModel().getColumn(3).setPreferredWidth(160);
         table.getColumnModel().getColumn(4).setPreferredWidth(50);
+        table.getColumnModel().getColumn(6).setPreferredWidth(200);
         table.setDefaultRenderer(Object.class, new Renderer());
         table.setDefaultRenderer(Icon.class, new IconRenderer());
         table.getSelectionModel().addListSelectionListener(e -> {
@@ -137,6 +140,12 @@ public final class LotsPanel extends JPanel {
         add(scroll);
         add(counts, BorderLayout.SOUTH);
         updateCounts();
+    }
+
+    /** Updates which lots are already in DAMN menus. */
+    public void setMenuMembership(Map<String, String> m) {
+        inMenus = m;
+        model.fireTableDataChanged();
     }
 
     public void setLots(List<LotInfo> lots) {
@@ -212,7 +221,7 @@ public final class LotsPanel extends JPanel {
 
     private final class LotModel extends AbstractTableModel {
         final List<LotInfo> rows = new ArrayList<>();
-        final String[] cols = {"", "Name", "File", "TGI", "Size", "Kind"};
+        final String[] cols = {"", "Name", "File", "TGI", "Size", "Kind", "In DAMN menu"};
 
         void set(List<LotInfo> l) {
             rows.clear();
@@ -241,7 +250,8 @@ public final class LotsPanel extends JPanel {
                 case 2 -> l.file().getFileName().toString();
                 case 3 -> l.exemplar().toString();
                 case 4 -> l.sizeText();
-                default -> l.category().name().toLowerCase(Locale.ROOT);
+                case 5 -> l.category().name().toLowerCase(Locale.ROOT);
+                default -> inMenus.getOrDefault(l.key(), "");
             };
         }
     }
