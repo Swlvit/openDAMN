@@ -56,7 +56,8 @@ public class SubmenuCheck {
         System.out.println("REPORT");
         System.out.println("  hidden with submenu:     " + r.hiddenWithSubmenu().size());
         System.out.println("  hidden, no tag:          " + r.hiddenUntagged().size());
-        System.out.println("  missing lots:            " + r.missingLots().size());
+        System.out.println("  missing lots (sub-menu): " + r.missingLots().size());
+        System.out.println("  missing lots (DAMN menu):" + r.missingMenuLots().size());
         System.out.println("  needs button:            " + r.needsButton().size());
         System.out.println("  submenus total:          " + r.allSubmenus().size());
         System.out.println("  submenus broken/empty:   " + r.brokenSubmenus().size());
@@ -74,6 +75,18 @@ public class SubmenuCheck {
         System.out.println("--- sample: hidden, no tag ---");
         r.hiddenUntagged().stream().limit(8).forEach(row ->
                 System.out.printf("  %-38s %-36s %s%n", row.lot(), row.submenu(), row.submenuHex()));
+
+        System.out.println();
+        System.out.println("--- grouping labels ---");
+        System.out.println("  sub-menu row group: " + (r.missingLots().isEmpty() ? "(none)"
+                : r.missingLots().get(0).group()));
+        System.out.println("  DAMN row group:     " + (r.missingMenuLots().isEmpty() ? "(none)"
+                : r.missingMenuLots().get(0).group()));
+
+        System.out.println();
+        System.out.println("--- sample: missing lots (DAMN menu) ---");
+        r.missingMenuLots().stream().limit(8).forEach(row ->
+                System.out.printf("  %-42s %-12s %s%n", row.lot(), row.source().label, row.note()));
 
         System.out.println();
         System.out.println("--- sample: missing lots ---");

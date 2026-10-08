@@ -70,10 +70,27 @@ public final class SubmenuIndex {
     /** One lot referenced by a sub-menu. */
     public record Target(int submenuId, Tgi exemplar, State state, Path file) {}
 
+    /** Which side of the app a row came from. */
+    public enum Source {
+        /** A sub-menu lists this lot, whether through a patch cohort or its own tag. */
+        SUBMENU("sub-menu"),
+        /** A DAMN menu has an entry for this lot. */
+        DAMN("DAMN menu");
+
+        public final String label;
+
+        Source(String label) { this.label = label; }
+    }
+
     /** One row of the report. */
     public record Row(Tgi exemplar, String lot, int submenuId, String submenu,
-                      int submenuSize, int hiddenInSubmenu, String note) {
+                      int submenuSize, int hiddenInSubmenu, String note, Source source) {
         public String submenuHex() { return Tgi.hexUpper(submenuId); }
+
+        /** Group for display, e.g. "Missing lots (sub-menu)". */
+        public String group() {
+            return "Missing lots (" + source.label + ")";
+        }
     }
 
     /** Health of one sub-menu. */
@@ -101,7 +118,7 @@ public final class SubmenuIndex {
 
     /** Everything the viewer shows. */
     public record Report(List<Row> hiddenWithSubmenu, List<Row> hiddenUntagged,
-                         List<Row> missingLots, List<Row> needsButton,
+                         List<Row> missingLots, List<Row> missingMenuLots, List<Row> needsButton,
                          List<SubmenuStatus> brokenSubmenus, List<SubmenuStatus> allSubmenus) {
         public int totalReferenced() { return allSubmenus.size(); }
     }
@@ -303,6 +320,9 @@ public final class SubmenuIndex {
     public Report classify(Collection<MenuNode> menus) throws IOException {
         Map<Tgi, String> lotNames = new HashMap<>();
         Set<Tgi> inMenus = new HashSet<>();
+        // DAMN menu entries whose lot no longer exists anywhere. Only the first menu that holds a
+        // lot names it, so a lot in several menus is listed once.
+        Map<Tgi, String> missingFromMenus = new LinkedHashMap<>();
         if (menus != null) {
             for (MenuNode n : menus) {
                 for (MenuNode d : n.descendantsAndSelf()) {
@@ -311,6 +331,7 @@ public final class SubmenuIndex {
                         Tgi t = it.exemplarTgi();
                         inMenus.add(t);
                         lotNames.putIfAbsent(t, it.linkName());
+                        if (index.effective(t) == null) missingFromMenus.putIfAbsent(t, it.linkName());
                     }
                 }
             }
@@ -388,7 +409,8 @@ public final class SubmenuIndex {
 
                 Row row = new Row(t.exemplar(), lotNames.getOrDefault(t.exemplar(), nameOfLot(t.exemplar())),
                         id, b != null ? b.name() : "(no button)",
-                        st == null ? 0 : st.members(), st == null ? 0 : st.hidden(), note);
+                        st == null ? 0 : st.members(), st == null ? 0 : st.hidden(), note,
+                        Source.SUBMENU);
 
                 if (t.state() == State.DANGLING) missingLots.add(row);
                 else if (b == null) needsButton.add(row);
@@ -396,12 +418,23 @@ public final class SubmenuIndex {
                 else hiddenUntagged.add(row);
             }
         }
+        // DAMN menu entries pointing at a lot no plugin provides. These have no sub-menu at all,
+        // so the sub-menu columns are left empty.
+        List<Row> missingMenuLots = new ArrayList<>();
+        for (var e : missingFromMenus.entrySet()) {
+            missingMenuLots.add(new Row(e.getKey(), e.getValue(), 0, "", 0, 0,
+                    "in a DAMN menu, but no plugin provides this lot", Source.DAMN));
+        }
+        missingMenuLots.sort(Comparator.comparing(Row::lot, String.CASE_INSENSITIVE_ORDER));
+
         sort(hiddenWithSubmenu);
         sort(hiddenUntagged);
+        sort(missingLots);
         sort(needsButton);
 
         List<SubmenuStatus> broken = statuses.stream().filter(SubmenuStatus::empty).toList();
-        return new Report(hiddenWithSubmenu, hiddenUntagged, missingLots, needsButton, broken, statuses);
+        return new Report(hiddenWithSubmenu, hiddenUntagged, missingLots, missingMenuLots, needsButton,
+                broken, statuses);
     }
 
     private static void sort(List<Row> rows) {
