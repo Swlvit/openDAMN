@@ -27,6 +27,7 @@ import org.opendamn.damn.DamnMenus;
 import org.opendamn.damn.ItemTemplate;
 import org.opendamn.damn.MenuItem;
 import org.opendamn.damn.MenuNode;
+import org.opendamn.dbpf.Tgi;
 import org.opendamn.sc4.GamePaths;
 import org.opendamn.sc4.HiddenLots;
 import org.opendamn.sc4.LotInfo;
@@ -129,6 +130,8 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
         damn.add(Ui.action("Import menu from ZIP…", null, null, e -> Dialogs.importZip(this, ctx, tree.selected())));
         damn.add(Ui.action("Export menu as web page…", null, null, e -> Dialogs.exportHtml(this, ctx, tree.selected())));
         damn.addSeparator();
+        damn.add(Ui.action("Lots with sub-menus…", "Hidden lots that still occupy a Submenus-DLL sub-menu",
+                null, e -> SubmenuDialog.show(this, ctx)));
         damn.add(Ui.action("Health check…", "Look for problems in the DAMN setup (read-only)", null,
                 e -> Dialogs.health(this, ctx)));
         damn.add(Ui.action("Statistics…", null, null, e -> Dialogs.statistics(this, ctx)));
@@ -308,6 +311,48 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
             }
         }
         return m;
+    }
+
+    /**
+     * Unhides the given lots everywhere they appear in the DAMN menus. Only the in-memory flags
+     * change here; the hidden folder is rewritten by the next save.
+     */
+    void unhideLots(java.util.Collection<Tgi> exemplars) {
+        if (exemplars.isEmpty() || ctx.menus() == null) return;
+        java.util.Set<Tgi> wanted = new java.util.HashSet<>(exemplars);
+        String what = wanted.size() == 1 ? "1 lot" : wanted.size() + " lots";
+        if (!Ui.confirm(this, "Unhide lots", "<html>Unhide " + what + "?<br><br>"
+                + "They return to the game's own menus as well as their sub-menu.<br>"
+                + "Nothing is written until you save.</html>")) {
+            return;
+        }
+        int count = 0;
+        int menusTouched = 0;
+        try {
+            for (MenuNode n : ctx.menus().root().descendantsAndSelf()) {
+                boolean changed = false;
+                for (MenuItem it : n.items()) {
+                    if (!it.hidden() || !wanted.contains(it.exemplarTgi())) continue;
+                    it.setHidden(false);
+                    changed = true;
+                    count++;
+                }
+                if (changed) {
+                    ctx.menus().markItemsChanged(n);
+                    menusTouched++;
+                }
+            }
+        } catch (IllegalStateException e) {
+            // A menu whose items were never loaded cannot contain a match; skip it.
+            Log.info("Unhide skipped an unloaded menu: " + e.getMessage());
+        }
+        if (count == 0) {
+            Ui.info(this, "Unhide lots", "None of those lots are flagged hidden in a DAMN menu.");
+            return;
+        }
+        ctx.fireDirty();
+        items.refresh();
+        status.setText("Unhid " + count + " lot(s) in " + menusTouched + " menu(s); save to apply.");
     }
 
     private void menuSelected(MenuNode n) {

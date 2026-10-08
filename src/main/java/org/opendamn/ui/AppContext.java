@@ -16,6 +16,7 @@ import org.opendamn.sc4.GamePaths;
 import org.opendamn.sc4.LotCatalog;
 import org.opendamn.sc4.LotFilters;
 import org.opendamn.sc4.PluginIndex;
+import org.opendamn.sc4.SubmenuIndex;
 import org.opendamn.util.Log;
 
 /** Shared application state. All mutation happens on the Swing event thread. */
@@ -34,6 +35,7 @@ public final class AppContext {
     private DamnMenus menus;
     private PluginIndex index = PluginIndex.empty();
     private LotCatalog catalog = new LotCatalog(PluginIndex.empty());
+    private SubmenuIndex submenuIndex;
     private final List<Runnable> indexListeners = new CopyOnWriteArrayList<>();
     private final List<Runnable> dirtyListeners = new CopyOnWriteArrayList<>();
 
@@ -124,9 +126,15 @@ public final class AppContext {
     public PluginIndex index() { return index; }
     public LotCatalog catalog() { return catalog; }
 
+    /** Sub-menu scan of the current index, or null until it has been built. */
+    public SubmenuIndex submenuIndex() { return submenuIndex; }
+
+    public void setSubmenuIndex(SubmenuIndex si) { this.submenuIndex = si; }
+
     public void setIndex(PluginIndex idx) {
         this.index = idx;
         this.catalog = new LotCatalog(idx);
+        this.submenuIndex = null;
         for (Runnable r : indexListeners) r.run();
     }
 
