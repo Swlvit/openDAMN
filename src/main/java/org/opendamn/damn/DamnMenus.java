@@ -396,7 +396,7 @@ public final class DamnMenus {
     // ------------------------------------------------------------------ IDs
 
     /** Collects every instance ID used by existing menu files so new IDs never collide. */
-    private void loadUsedIds() throws IOException {
+    void loadUsedIds() throws IOException {
         if (usedIds != null) return;
         usedIds = new HashSet<>();
         if (!Files.isDirectory(rootDir)) return;

@@ -132,6 +132,9 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
         damn.addSeparator();
         damn.add(Ui.action("Lots with sub-menus…", "Hidden lots that still occupy a Submenus-DLL sub-menu",
                 null, e -> SubmenuDialog.show(this, ctx)));
+        damn.add(Ui.action("Remove entries for missing lots…",
+                "Move DAMN menu entries whose lot is no longer installed to a folder outside the game",
+                null, e -> removeMissingEntries()));
         damn.add(Ui.action("Health check…", "Look for problems in the DAMN setup (read-only)", null,
                 e -> Dialogs.health(this, ctx)));
         damn.add(Ui.action("Statistics…", null, null, e -> Dialogs.statistics(this, ctx)));
@@ -655,6 +658,86 @@ public final class MainWindow extends JFrame implements LotsPanel.Actions, MenuT
                     + " old file(s) removed.";
             if (h.problems().isEmpty()) Ui.info(this, "Hidden lots", msg);
             else Ui.showLines(this, "Hidden lots", msg, h.problems());
+        });
+    }
+
+    /**
+     * Moves DAMN menu entries whose lot no longer exists into an archive folder outside the game,
+     * then saves. The archive is written and verified before any menu is changed.
+     */
+    private void removeMissingEntries() {
+        DamnMenus m = ctx.menus();
+        if (m == null) return;
+        if (ctx.isDirty()) {
+            Ui.info(this, "Remove missing entries", "Please save your changes first.");
+            return;
+        }
+        List<Path> roots = ctx.indexRoots();
+        Ui.runWithProgress(this, "Finding missing lots", p -> {
+            // A fresh scan, so a plugin installed since the last one is not mistaken for missing.
+            p.message("Checking plugins…");
+            PluginIndex idx = PluginIndex.build(roots, ctx.settings.cacheFile(), (d, t, c) -> p.update(d, t, c.toString()));
+            javax.swing.SwingUtilities.invokeAndWait(() -> ctx.setIndex(idx));
+            p.message("Reading DAMN menus…");
+            return org.opendamn.damn.MissingEntries.plan(m, it -> idx.effective(it.exemplarTgi()) == null);
+        }, plan -> confirmRemoveMissing(m, plan));
+    }
+
+    private void confirmRemoveMissing(DamnMenus m, org.opendamn.damn.MissingEntries.Plan plan) {
+        if (plan.items() == 0) {
+            Ui.info(this, "Remove missing entries", "Every DAMN menu entry points at an installed lot. Nothing to do.");
+            return;
+        }
+        List<String> lines = new ArrayList<>();
+        for (var e : plan.remove().entrySet()) {
+            for (MenuItem it : e.getValue()) lines.add(e.getKey().displayPath() + "  —  " + it.linkName());
+        }
+        if (!plan.emptied().isEmpty()) {
+            lines.add("");
+            lines.add("Menus removed because nothing is left in them:");
+            for (MenuNode n : plan.emptied()) lines.add("  " + n.displayPath());
+        }
+        Ui.showLines(this, "Entries for missing lots",
+                plan.items() + " entr" + (plan.items() == 1 ? "y" : "ies") + " in " + plan.remove().size()
+                        + " menu(s) point at lots no installed plugin provides:", lines);
+
+        javax.swing.JFileChooser fc = new javax.swing.JFileChooser(ctx.settings.get("damn.removedArchiveDir",
+                System.getProperty("user.home")));
+        fc.setDialogTitle("Folder to keep the removed entries in (outside the game)");
+        fc.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
+        fc.setAcceptAllFileFilterUsed(false);
+        if (fc.showDialog(this, "Use this folder") != javax.swing.JFileChooser.APPROVE_OPTION) return;
+        Path parent = fc.getSelectedFile().toPath().toAbsolutePath().normalize();
+        for (Path inside : new Path[] {ctx.gameDir(), ctx.userPlugins()}) {
+            if (inside != null && parent.startsWith(inside.toAbsolutePath().normalize())) {
+                Ui.error(this, "Remove missing entries", "Choose a folder outside\n" + inside
+                        + "\nThe game loads every file below it, so archived menus would come back.");
+                return;
+            }
+        }
+        if (!Ui.confirm(this, "Remove missing entries", "<html>Move " + plan.items() + " entries"
+                + (plan.emptied().isEmpty() ? "" : " and " + plan.emptied().size() + " empty menu(s)")
+                + " out of DAMN?<br><br>They are kept in a new folder inside<br>" + parent
+                + "<br>together with a ZIP that restores them with <i>Import menu from ZIP</i>.<br><br>"
+                + "The menus are then saved.</html>")) {
+            return;
+        }
+        ctx.settings.set("damn.removedArchiveDir", parent.toString());
+        ctx.settings.save();
+
+        Ui.runWithProgress(this, "Archiving entries", p -> {
+            p.message("Writing the archive…");
+            return org.opendamn.damn.MissingEntries.archive(m, plan, parent, it -> Images.placeholderIcon(it.linkName()));
+        }, res -> {
+            org.opendamn.damn.MissingEntries.apply(m, plan);
+            ctx.fireDirty();
+            refreshMenus();
+            save();
+            Log.info("Archived " + res.items() + " DAMN entries to " + res.folder());
+            Ui.info(this, "Remove missing entries", "<html>Moved " + res.items() + " entries"
+                    + (plan.emptied().isEmpty() ? "" : " and " + plan.emptied().size() + " empty menu(s)")
+                    + " to<br>" + res.folder() + "<br><br>The list is in removed-entries.txt. To put them back, select Root"
+                    + "<br>and use DAMN &gt; Import menu from ZIP with restore-into-Root.zip.</html>");
         });
     }
 
