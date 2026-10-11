@@ -38,15 +38,23 @@ tasks.test {
     maxHeapSize = "1g"
 }
 
+// The About dialog reads Implementation-Version, so it must be set or it shows no version.
+val manifestAttributes = mapOf(
+    "Main-Class" to "org.opendamn.Main",
+    "Implementation-Title" to "OpenDAMN",
+    "Implementation-Version" to version,
+    "Implementation-Vendor" to "OpenDAMN contributors",
+)
+
 tasks.jar {
-    manifest { attributes("Main-Class" to "org.opendamn.Main") }
+    manifest { attributes(manifestAttributes) }
 }
 
 // Single runnable jar for users who just want to double-click.
 val fatJar by tasks.registering(Jar::class) {
     archiveClassifier = "all"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest { attributes("Main-Class" to "org.opendamn.Main") }
+    manifest { attributes(manifestAttributes) }
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
     from({ configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) } })

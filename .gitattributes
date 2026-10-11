@@ -1,0 +1,17 @@
+# Normalise text to LF in the repository.
+* text=auto eol=lf
+
+# Windows scripts must keep CRLF or cmd.exe misparses them.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files: never touch line endings, never diff as text.
+*.jar binary
+*.dat binary
+*.png binary
+*.zip binary
+
+# Game data templates. These are copied into the DAMN plugin byte for byte and the
+# game reads them with CRLF line endings, so they must never be normalised.
+src/main/resources/org/opendamn/engine/*.txt -text
+src/main/resources/org/opendamn/networks/*.txt -text
