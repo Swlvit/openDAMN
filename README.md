@@ -1,4 +1,24 @@
 # OpenDAMN
+_Completely coded by Claude_  
+            !!!DAMN is officially deprecated!!!
+ 
+OpenDAMN is free software under the **GNU General Public License, version 3 or
+later**. See [LICENSE](LICENSE).
+
+It interoperates with, and ships files from, other people's work:
+
+- **DAMN** — the menu system itself, by Daeley.
+- **SSPTool** by Stefan Wertich and **DAMN Manager** by Yildun — the original tools,
+  and the source of the DAMN engine files in `src/main/resources/org/opendamn/engine/`,
+  which are GPL.
+- **`new_properties.xml`** — the community property definitions maintained by
+  **memo33** for the Submenus DLL project.
+- **FlatLaf** by FormDev Software (Apache 2.0) — the look and feel.
+
+SimCity 4 is a trademark of Electronic Arts. This project is not affiliated with or
+endorsed by EA or Maxis.
+
+It is a tool for creating files for plugin Daeleys Advanced Menu Navigator.
 
 A modern, open-source manager for **DAMN** menus in SimCity 4 — the in-game plugin
 browser that lets you organise custom lots into your own menu structure.
