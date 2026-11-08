@@ -1,6 +1,8 @@
 # OpenDAMN
 _Completely coded by Claude_  
             !!!DAMN is officially deprecated!!!
+
+Manual (.html) available under docs
  
 OpenDAMN is free software under the **GNU General Public License, version 3 or
 later**. See [LICENSE](LICENSE).
