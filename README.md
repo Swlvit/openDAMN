@@ -2,7 +2,8 @@
 _Completely coded by Claude_  
             !!!DAMN is officially deprecated!!!
 
-Manual (.html) available under docs
+📖 **[Read the manual](https://swlvit.github.io/openDAMN/manual/)** — a quick, illustrated guide to every
+window. It is also in the release download: open `Manual.html`.
  
 OpenDAMN is free software under the **GNU General Public License, version 3 or
 later**. See [LICENSE](LICENSE).
@@ -71,6 +72,10 @@ On Linux and macOS you can also use the bundled launcher:
 ```
 
 On Windows, double-click `OpenDAMN.bat`.
+
+The release zip also contains the manual: open `Manual.html` (or `manual/index.html`)
+in any web browser. No internet connection is needed. You can also
+[read it online](https://swlvit.github.io/openDAMN/manual/).
 
 Settings are stored per user:
 
