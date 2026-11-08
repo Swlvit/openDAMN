@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenDAMN: Quick Manual</title>
+<style>
+  :root {
+    --ink: #1d2330; --muted: #5b6475; --line: #dfe3ea; --bg: #f6f7f9;
+    --accent: #ffb300; --accent-ink: #3a2a00; --new: #1f8a4c; --link: #1f6fb2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.55 system-ui, "Segoe UI", "Noto Sans", sans-serif; color: var(--ink); background: var(--bg); }
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 28px 80px; background: #fff; }
+  header.cover { border-bottom: 3px solid var(--ink); padding-bottom: 18px; margin-bottom: 28px; }
+  header.cover h1 { font-size: 2.4rem; margin: 0 0 4px; letter-spacing: -0.02em; }
+  header.cover p { margin: 0; color: var(--muted); }
+  h2 { font-size: 1.55rem; margin: 48px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.15rem; margin: 28px 0 6px; }
+  a { color: var(--link); }
+  code, kbd { font: 0.9em ui-monospace, "JetBrains Mono", monospace; background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
+  kbd { border: 1px solid #c9ced8; border-bottom-width: 2px; }
+  .menu { font-weight: 600; white-space: nowrap; }
+  .badge { display: inline-block; font: 700 0.7rem/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.06em;
+           color: #fff; background: var(--new); padding: 4px 7px; border-radius: 4px; vertical-align: 0.3em; margin-left: 6px; }
+  .toc { columns: 2; gap: 32px; padding-left: 20px; }
+  .toc li { break-inside: avoid; }
+  .note { border-left: 4px solid var(--link); background: #eef5fc; padding: 10px 14px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+  .warn { border-left-color: #c62828; background: #fdf0f0; }
+  table.plain { border-collapse: collapse; margin: 10px 0 16px; width: 100%; }
+  table.plain th, table.plain td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table.plain th { background: #f0f2f6; }
+
+  /* ---- screenshot with highlight boxes ---- */
+  figure { margin: 18px 0 26px; }
+  .win { border: 1px solid #1b1d22; border-radius: 8px; overflow: hidden; box-shadow: 0 6px 22px rgba(0,0,0,.18); background: #3c3f41; display: inline-block; max-width: 100%; }
+  .win .bar { background: #2b2d30; color: #cfd3da; font: 600 13px/30px system-ui, sans-serif; padding: 0 12px; display: flex; align-items: center; gap: 7px; }
+  .win .bar i { width: 11px; height: 11px; border-radius: 50%; background: #555a61; display: inline-block; }
+  .win .bar span { margin-left: 8px; }
+  .shot { position: relative; line-height: 0; }
+  .shot img { width: 100%; height: auto; display: block; }
+  .hl { position: absolute;
+        left: calc(var(--x) / var(--iw) * 100%); top: calc(var(--y) / var(--ih) * 100%);
+        width: calc(var(--w) / var(--iw) * 100%); height: calc(var(--h) / var(--ih) * 100%);
+        border: 3px solid var(--accent); border-radius: 6px;
+        box-shadow: 0 0 0 2px rgba(0,0,0,.55), 0 0 18px rgba(255,179,0,.55); }
+  .hl::before { content: attr(data-n); position: absolute; top: -13px; left: -13px;
+        width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+        font: 800 13px/24px system-ui, sans-serif; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+  .hl.r::before { left: auto; right: -13px; }
+  figcaption { color: var(--muted); font-size: 0.92rem; margin-top: 8px; }
+  ol.callouts { list-style: none; padding: 0; margin: 8px 0 0; counter-reset: c; }
+  ol.callouts li { counter-increment: c; padding-left: 34px; position: relative; margin: 6px 0; }
+  ol.callouts li::before { content: counter(c); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%;
+        background: var(--accent); color: var(--accent-ink); font: 800 12px/22px system-ui, sans-serif; text-align: center; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .small .win { max-width: 640px; }
+
+  @media (max-width: 800px) { .two { grid-template-columns: 1fr; } .toc { columns: 1; } }
+  @media print {
+    body { background: #fff; font-size: 11pt; }
+    main { padding: 0; max-width: none; }
+    h2 { break-before: page; border-top: 0; }
+    figure, .note, table { break-inside: avoid; }
+    .win { box-shadow: none; }
+    a { color: inherit; text-decoration: none; }
+  }
+  @page { size: A4; margin: 14mm; }
+</style>
+</head>
+<body>
+<main>
+
+<header class="cover">
+  <h1>OpenDAMN: Quick Manual</h1>
+  <p>Version 0.1.0 · A manager for DAMN menus in SimCity 4 · Screenshots from a real install with about 57,000 plugin files</p>
+</header>
+
+<p>OpenDAMN replaces <em>DAMN Manager</em> and <em>SSPTool</em>. It reads and writes the same files, so the menus you already have
+keep working. This manual is a short tour. Features marked <span class="badge">New</span> were not in the original tools.
+Numbered yellow boxes on each screenshot match the numbered notes below it.</p>
+
+<ol class="toc">
+  <li><a href="#start">Getting started</a></li>
+  <li><a href="#main">The main window</a></li>
+  <li><a href="#hiding">Hiding lots from the game's menus</a></li>
+  <li><a href="#submenus">Sub-menu report</a> <span class="badge">New</span></li>
+  <li><a href="#health">Health check and statistics</a> <span class="badge">New</span></li>
+  <li><a href="#damnmenu">The DAMN menu at a glance</a></li>
+  <li><a href="#finding">Finding lots</a></li>
+  <li><a href="#editing">Editing menus</a></li>
+  <li><a href="#networks">Adding network items</a></li>
+  <li><a href="#install">Installing and configuring DAMN</a></li>
+  <li><a href="#settings">Settings and colours</a></li>
+  <li><a href="#keys">Keyboard shortcuts</a></li>
+</ol>
+
+<!-- ======================================================================= -->
+<h2 id="start">1. Getting started</h2>
+<p>You need <strong>Java 21 or newer</strong>. Start the program with <code>java -jar OpenDAMN.jar</code>,
+or use <code>OpenDAMN.sh</code> (Linux/macOS) or <code>OpenDAMN.bat</code> (Windows).</p>
+<ul>
+  <li><strong>Finds the game for you</strong> <span class="badge">New</span>. Normal, Wine and Proton installs are detected
+      at the first start. To change the folders later, use <span class="menu">File → Game and plugin folders…</span>.</li>
+  <li><strong>Fast plugin index.</strong> The first scan reads every plugin file. Later scans only read files that changed,
+      so they take about a second. Use <kbd>F5</kbd> (<span class="menu">Tools → Rescan plugins</span>) after you install new plugins.</li>
+  <li><strong>Nothing is written until you save</strong> (<kbd>Ctrl</kbd>+<kbd>S</kbd>). The title bar shows when you have
+      unsaved changes. Each save makes a backup of your menus first.</li>
+</ul>
+
+<!-- ======================================================================= -->
+<h2 id="main">2. The main window</h2>
+<p>The top half shows what is <em>installed</em>: your plugin folders, the lots in them, and details of the selected lot.
+The bottom half shows your <em>DAMN menus</em>: the menu tree, the items in the selected menu, and details of the selected item.</p>
+
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>OpenDAMN — SimCity 4 Deluxe Edition</span></div>
+  <div class="shot" style="--iw:1600;--ih:1000">
+    <img src="img/main.png" alt="OpenDAMN main window">
+    <span class="hl" data-n="1" style="--x:390;--y:50;--w:452;--h:29"></span>
+    <span class="hl r" data-n="2" style="--x:946;--y:80;--w:156;--h:116"></span>
+    <span class="hl r" data-n="3" style="--x:1128;--y:54;--w:282;--h:28"></span>
+    <span class="hl" data-n="4" style="--x:6;--y:596;--w:434;--h:374"></span>
+    <span class="hl" data-n="5" style="--x:630;--y:592;--w:74;--h:28"></span>
+    <span class="hl" data-n="6" style="--x:468;--y:680;--w:468;--h:264"></span>
+    <span class="hl" data-n="7" style="--x:960;--y:924;--w:256;--h:25"></span>
+  </div></div>
+  <ol class="callouts">
+    <li><strong>Search and filter.</strong> Type to filter the lot list. <em>Filter…</em> limits it to a category.
+        <em>Add ▶</em> puts the selected lots into the menu you selected below.</li>
+    <li><strong>"In DAMN menu" column.</strong> Shows the DAMN menus that already contain each lot, so you can spot duplicates
+        and lots you have not filed yet.</li>
+    <li><strong>Lot details.</strong> The <em>Properties</em> tab lists every exemplar property with its name
+        (see <a href="#finding">Finding lots</a>).</li>
+    <li><strong>Colour-coded menu tree.</strong> The number after each name is its item count. The colour tells you whether
+        the menu is empty, has lots, or is over the item limit. You can change the colours in Settings.</li>
+    <li><strong>Hide button.</strong> Removes the selected items from the game's own (Maxis) menus.
+        They stay in your DAMN menu.</li>
+    <li><strong>Hidden items</strong> are purple and marked <em>(hidden)</em>.</li>
+    <li><strong>Hidden checkbox</strong> for the selected item. Click <em>Apply</em> to keep the change and <em>Revert</em> to undo it.</li>
+  </ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="hiding">3. Hiding lots from the game's menus</h2>
+<p>A hidden lot disappears from the game's own building menus. You can still place it from your DAMN menu.
+OpenDAMN writes copies of the lot data into a hidden-lots folder. That folder loads after all your other plugins, so the
+copies take priority. <strong>Your original plugin files are never changed.</strong></p>
+
+<ul>
+  <li><strong>Always rebuilt from the original files</strong> <span class="badge">New</span>. Each save rewrites the hidden folder
+      from your current plugins. Old copies never pile up. When you unhide a lot, its copy is removed.</li>
+  <li><span class="menu">DAMN → Update hidden lots</span> rewrites the folder right away, for example after you update a plugin.</li>
+  <li><span class="menu">DAMN → Check hidden folder load order</span> <span class="badge">New</span> warns you if another folder loads
+      after the hidden folder. A name like <code>~Documents</code> sorts after <code>z</code>, so it would load later and
+      override the hidden copies.</li>
+  <li>To hide or unhide a whole branch of the tree, right-click a menu and choose <em>Hide lots (with submenus)</em>.</li>
+</ul>
+
+<figure class="small">
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Settings — Hiding</span></div>
+  <div class="shot" style="--iw:623;--ih:434">
+    <img src="img/settings-hiding.png" alt="Hiding settings">
+    <span class="hl" data-n="1" style="--x:20;--y:141;--w:582;--h:32"></span>
+    <span class="hl" data-n="2" style="--x:20;--y:233;--w:582;--h:52"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>The name of the hidden-lots folder inside your Plugins folder. If you already have one, OpenDAMN finds it.</li>
+    <li><strong>ORIGINAL</strong> format keeps each lot exactly as its author made it. Only the menu button is removed.
+        This is the safest choice.</li>
+  </ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="submenus">4. Sub-menu report <span class="badge">New</span></h2>
+<p>Do you use the <a href="https://github.com/memo33/submenus-dll">Submenus DLL</a> or <em>SC4ResourceLoadingHooks</em>?
+Then <span class="menu">DAMN → Lots with sub-menus…</span> shows how your hidden lots and the game's sub-menus affect each other.
+The report only reads files. Unhiding changes your DAMN menus only. No third-party plugin is ever changed.</p>
+
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Lots with sub-menus</span></div>
+  <div class="shot" style="--iw:1400;--ih:820">
+    <img src="img/submenus-hidden.png" alt="Lots with sub-menus — hidden with sub-menu tab">
+    <span class="hl" data-n="1" style="--x:2;--y:1;--w:1126;--h:32"></span>
+    <span class="hl" data-n="2" style="--x:2;--y:76;--w:58;--h:700"></span>
+    <span class="hl" data-n="3" style="--x:212;--y:37;--w:144;--h:28"></span>
+    <span class="hl r" data-n="4" style="--x:1178;--y:788;--w:134;--h:28"></span>
+  </div></div>
+  <ol class="callouts">
+    <li><strong>Six tabs</strong>, each with a count:
+      <table class="plain">
+        <tr><th>Tab</th><th>Meaning</th></tr>
+        <tr><td>Hidden with sub-menu</td><td>Hidden in DAMN, but still listed in a sub-menu</td></tr>
+        <tr><td>Hidden, untagged</td><td>Put in a sub-menu by a patch, with no sub-menu tag of its own</td></tr>
+        <tr><td>Missing (sub-menu)</td><td>A sub-menu lists it, but no installed plugin provides it</td></tr>
+        <tr><td>Missing (DAMN menu)</td><td>A DAMN menu lists it, but no installed plugin provides it</td></tr>
+        <tr><td>No button</td><td>In a sub-menu whose button no plugin provides</td></tr>
+        <tr><td>Sub-menus not shown</td><td>Sub-menus the game will not display, and why</td></tr>
+      </table></li>
+    <li>Tick the lots you want back in the game's own menus.</li>
+    <li>Copy any list to the clipboard or save it as a text file.</li>
+    <li><strong>Unhide selected</strong> unhides the ticked lots. You confirm first, and nothing is written until you save.</li>
+  </ol>
+</figure>
+
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Lots with sub-menus — Sub-menus not shown</span></div>
+  <div class="shot" style="--iw:1400;--ih:820">
+    <img src="img/submenus-not-shown.png" alt="Sub-menus not shown tab">
+    <span class="hl" data-n="1" style="--x:496;--y:76;--w:574;--h:700"></span>
+    <span class="hl r" data-n="2" style="--x:1070;--y:76;--w:320;--h:700"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>For each sub-menu: how many members it has, and how many are missing, hidden or visible.</li>
+    <li><strong>Why</strong> it is not shown. If <em>all members are hidden</em>, the sub-menu will not appear in the game.
+        The Submenus DLL's own log cannot show this, because it counts the hidden copies as content.</li>
+  </ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="health">5. Health check and statistics <span class="badge">New</span></h2>
+<p><span class="menu">DAMN → Health check…</span> looks for problems before they reach the game. It checks for a missing or second copy of the DAMN engine,
+menu files in the wrong place, duplicate menu file names, an out-of-date index, menus over the limit,
+entries whose lot is not installed, and a hidden folder that does not load last. It only reads files.
+<span class="menu">DAMN → Statistics…</span> gives a summary of your whole setup. You can copy or save both reports.</p>
+
+<div class="two">
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Health check</span></div>
+  <div class="shot" style="--iw:640;--ih:220"><img src="img/health.png" alt="Health check result"></div></div>
+  <figcaption>A clean setup: “No problems found”. The heading says <em>nothing was changed</em>.</figcaption>
+</figure>
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Statistics</span></div>
+  <div class="shot" style="--iw:772;--ih:439">
+    <img src="img/stats.png" alt="Statistics">
+    <span class="hl" data-n="1" style="--x:62;--y:118;--w:220;--h:62"></span>
+  </div></div>
+  <ol class="callouts"><li>Counts of hidden items, empty menus and menus over the limit.</li></ol>
+</figure>
+</div>
+
+<p><span class="menu">DAMN → Remove entries for missing lots…</span> <span class="badge">New</span> cleans up after you uninstall plugins.
+It <em>moves</em> menu entries whose lot is gone into an archive folder outside the game. They are not deleted,
+so you can bring them back.</p>
+
+<!-- ======================================================================= -->
+<h2 id="damnmenu">6. The DAMN menu at a glance</h2>
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>DAMN menu</span></div>
+  <div class="shot" style="--iw:720;--ih:345">
+    <img src="img/menu-damn.png" alt="DAMN menu">
+    <span class="hl r" data-n="1" style="--x:42;--y:82;--w:268;--h:52"></span>
+    <span class="hl r" data-n="2" style="--x:42;--y:143;--w:268;--h:78"></span>
+    <span class="hl r" data-n="3" style="--x:42;--y:230;--w:268;--h:104"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>Hidden-lot tools (<a href="#hiding">section 3</a>).</li>
+    <li>Share menus as ZIP archives, or publish a menu as a web page.</li>
+    <li>Sub-menu report, cleanup of missing lots, health check and statistics (<a href="#submenus">4</a> and <a href="#health">5</a>).</li>
+  </ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="finding">7. Finding lots</h2>
+<div class="two">
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Filter</span></div>
+  <div class="shot" style="--iw:720;--ih:520">
+    <img src="img/filter.png" alt="Filter dialog">
+    <span class="hl r" data-n="1" style="--x:381;--y:7;--w:334;--h:166"></span>
+  </div></div>
+  <ol class="callouts"><li>Pick a category on the left. The right side explains the rule it uses. These rules use the
+      community <code>new_properties.xml</code>. <em>Disable</em> shows all lots again.</li></ol>
+</figure>
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Lot details — Properties</span></div>
+  <div class="shot" style="--iw:475;--ih:535">
+    <img src="img/lot-properties.png" alt="Lot properties tab">
+    <span class="hl r" data-n="1" style="--x:192;--y:27;--w:90;--h:28"></span>
+  </div></div>
+  <ol class="callouts"><li>The <strong>Properties</strong> tab lists every property of the selected lot with its name.
+      You do not need a separate DAT editor to check a value.</li></ol>
+</figure>
+</div>
+
+<!-- ======================================================================= -->
+<h2 id="editing">8. Editing menus</h2>
+<p>Drag lots from the lot list onto a menu, or select a menu and click <em>Add ▶</em>. You can also drag items between menus.
+Most other actions are on the right-click menus.</p>
+<div class="two">
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Right-click on a menu</span></div>
+  <div class="shot" style="--iw:460;--ih:430">
+    <img src="img/menu-tree-context.png" alt="Menu tree context menu">
+    <span class="hl r" data-n="1" style="--x:62;--y:312;--w:240;--h:54"></span>
+    <span class="hl r" data-n="2" style="--x:62;--y:373;--w:240;--h:54"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>Hide or unhide every lot in this menu and all of its sub-menus at once.</li>
+    <li>Find a menu by name (<kbd>Ctrl</kbd>+<kbd>F</kbd>, then <kbd>F3</kbd> for the next match).</li>
+  </ol>
+</figure>
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Right-click on menu items</span></div>
+  <div class="shot" style="--iw:500;--ih:400">
+    <img src="img/menu-items-context.png" alt="Menu items context menu">
+    <span class="hl r" data-n="1" style="--x:190;--y:74;--w:248;--h:130"></span>
+    <span class="hl r" data-n="2" style="--x:190;--y:212;--w:248;--h:30"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>Cut, copy and paste items between menus. <em>View clipboard…</em> shows what you are about to paste.</li>
+    <li>Sort the menu alphabetically. The arrow buttons above the list move items up and down, or to the top and bottom.</li>
+  </ol>
+</figure>
+</div>
+
+<!-- ======================================================================= -->
+<h2 id="networks">9. Adding network items</h2>
+<p><span class="menu">Add → Network items…</span> puts road, rail and highway tools into a DAMN menu.
+<span class="menu">Add → Original SimCity lots…</span> does the same for the Maxis buildings.</p>
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Network items</span></div>
+  <div class="shot" style="--iw:900;--ih:640">
+    <img src="img/networks.png" alt="Network items dialog">
+    <span class="hl" data-n="1" style="--x:14;--y:14;--w:562;--h:32"></span>
+  </div></div>
+  <ol class="callouts"><li>Choose where the list comes from: the base game, <strong>your installed NAM</strong> (shown here), or a
+      RUL/TXT file. You can also add a row by hand. Tick the items you want and click OK.</li></ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="install">10. Installing and configuring DAMN</h2>
+<p><span class="menu">DAMN → Install / configure DAMN…</span> installs the DAMN plugin, or changes the size and layout of the
+in-game menu window. Your existing engine files are backed up first.</p>
+<figure>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Configure DAMN</span></div>
+  <div class="shot" style="--iw:848;--ih:433">
+    <img src="img/install.png" alt="Configure DAMN dialog">
+    <span class="hl" data-n="1" style="--x:20;--y:106;--w:806;--h:158"></span>
+    <span class="hl" data-n="2" style="--x:20;--y:267;--w:252;--h:24"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>Columns, column width, window height and the number of entries per menu.</li>
+    <li>The final in-game window size, updated as you type. It must fit your screen.</li>
+  </ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="settings">11. Settings and colours</h2>
+<p>Open <span class="menu">File → Settings…</span> (<kbd>Ctrl</kbd>+<kbd>,</kbd>). The tabs are <em>General</em>
+(item template, light or dark theme), <em>DAMN menus</em> (item limit, where new items go), <em>Hiding</em>
+(<a href="#hiding">section 3</a>) and <em>Colours</em>.</p>
+<figure class="small">
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>Settings — Colours</span></div>
+  <div class="shot" style="--iw:623;--ih:434">
+    <img src="img/settings-colours.png" alt="Colour settings">
+    <span class="hl" data-n="1" style="--x:20;--y:54;--w:582;--h:126"></span>
+    <span class="hl" data-n="2" style="--x:20;--y:182;--w:582;--h:158"></span>
+    <span class="hl" data-n="3" style="--x:20;--y:341;--w:582;--h:30"></span>
+  </div></div>
+  <ol class="callouts">
+    <li>Colours in the menu tree: empty, sub-menus only, has lots, over the limit.</li>
+    <li>Colours in the lot list for each kind of lot.</li>
+    <li>The colour for hidden menu items.</li>
+  </ol>
+</figure>
+
+<!-- ======================================================================= -->
+<h2 id="keys">12. Keyboard shortcuts</h2>
+<table class="plain">
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Save all changes to the game</td></tr>
+  <tr><td><kbd>F5</kbd></td><td>Rescan plugins (only changed files)</td></tr>
+  <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>F3</kbd></td><td>Find a menu / find next</td></tr>
+  <tr><td><kbd>F2</kbd></td><td>Rename the selected menu</td></tr>
+  <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd></td><td>Copy / cut / paste menu items</td></tr>
+  <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Log viewer</td></tr>
+  <tr><td><kbd>Ctrl</kbd>+<kbd>,</kbd></td><td>Settings</td></tr>
+  <tr><td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td><td>Exit</td></tr>
+</table>
+
+<div class="note">Something not working? Open the log (<kbd>Ctrl</kbd>+<kbd>L</kbd>) and run <span class="menu">DAMN → Health check…</span>.
+Both are safe and change nothing.</div>
+
+<p style="color:var(--muted);font-size:.85rem;margin-top:40px">OpenDAMN is free software under the GNU GPL v3 or later.
+DAMN by Daeley. SSPTool by Stefan Wertich. DAMN Manager by Yildun. <code>new_properties.xml</code> by memo33.
+SimCity 4 is a trademark of Electronic Arts. This project is not affiliated with EA or Maxis.</p>
+</main>
+</body>
+</html>
